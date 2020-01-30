@@ -93,22 +93,30 @@ namespace MonoGameWindowsStarter
             {
                 pixelRect.X += 2;
             }
-            if (canJump)
+            
+            if (newKeyboardState.IsKeyDown(Keys.Up) && jumpHeight < 70 && canJump)
             {
-                if (newKeyboardState.IsKeyDown(Keys.Up) && jumpHeight < 50)
-                {
                     pixelRect.Y -= 1;
                     jumpHeight += 1;
-                }
-                else
-                {
-                    canJump = false;
-                }
             }
+            else if (jumpHeight > 0)
+            {
+                pixelRect.Y += 1;
+                jumpHeight--;
+            }
+            if (jumpHeight >= 70)
+            {
+                canJump = false;
+            }
+               
             if (newKeyboardState.IsKeyUp(Keys.Up) && jumpHeight > 0)
             {
                 pixelRect.Y += 1;
                 jumpHeight--;
+            }
+            if(jumpHeight == 0)
+            {
+                canJump = true;
             }
 
             if (pixelRect.X < 0)
