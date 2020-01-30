@@ -11,6 +11,11 @@ namespace MonoGameWindowsStarter
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        Texture2D pixeldude;
+        Rectangle pixelRect;
+        int pixelSpeed;
+        KeyboardState oldKeyboardState;
+        KeyboardState newKeyboardState;
 
         public Game1()
         {
@@ -27,6 +32,14 @@ namespace MonoGameWindowsStarter
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            graphics.PreferredBackBufferWidth = 1042;
+            graphics.PreferredBackBufferHeight = 700;
+            graphics.ApplyChanges();
+
+            pixelRect.X = 0;
+            pixelRect.Y = 700 - 35;
+            pixelRect.Width = 30;
+            pixelRect.Height = 35;
 
             base.Initialize();
         }
@@ -39,6 +52,8 @@ namespace MonoGameWindowsStarter
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            //change later, he is very ugly
+            pixeldude = Content.Load<Texture2D>("pixeldude");
 
             // TODO: use this.Content to load your game content here
         }
@@ -59,8 +74,14 @@ namespace MonoGameWindowsStarter
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            newKeyboardState = Keyboard.GetState();
+            //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            //  Exit();
+
+            if (newKeyboardState.IsKeyDown(Keys.Escape))
                 Exit();
+
+
 
             // TODO: Add your update logic here
 
@@ -74,6 +95,10 @@ namespace MonoGameWindowsStarter
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+            spriteBatch.Begin();
+
+            spriteBatch.Draw(pixeldude, pixelRect ,Color.White);
+            spriteBatch.End();
 
             // TODO: Add your drawing code here
 
