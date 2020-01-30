@@ -13,7 +13,8 @@ namespace MonoGameWindowsStarter
         SpriteBatch spriteBatch;
         Texture2D pixeldude;
         Rectangle pixelRect;
-        int pixelSpeed;
+        int jumpHeight;
+        bool canJump;
         KeyboardState oldKeyboardState;
         KeyboardState newKeyboardState;
 
@@ -81,10 +82,53 @@ namespace MonoGameWindowsStarter
             if (newKeyboardState.IsKeyDown(Keys.Escape))
                 Exit();
 
+            
 
+            if (newKeyboardState.IsKeyDown(Keys.Left))
+            {
+                pixelRect.X -= 2;
+            }
 
+            if (newKeyboardState.IsKeyDown(Keys.Right))
+            {
+                pixelRect.X += 2;
+            }
+            if (canJump)
+            {
+                if (newKeyboardState.IsKeyDown(Keys.Up) && jumpHeight < 50)
+                {
+                    pixelRect.Y -= 1;
+                    jumpHeight += 1;
+                }
+                else
+                {
+                    canJump = false;
+                }
+            }
+            if (newKeyboardState.IsKeyUp(Keys.Up) && jumpHeight > 0)
+            {
+                pixelRect.Y += 1;
+                jumpHeight--;
+            }
+
+            if (pixelRect.X < 0)
+            {
+                pixelRect.X = 0;
+            }
+            if (pixelRect.X > GraphicsDevice.Viewport.Width - pixelRect.Width)
+            {
+                pixelRect.X = GraphicsDevice.Viewport.Width - pixelRect.Width;
+            }
+            if(pixelRect.Y < 0)
+            {
+                pixelRect.Y = 0;
+            }
+            if(pixelRect.Y > GraphicsDevice.Viewport.Height - pixelRect.Height)
+            {
+                pixelRect.Y = GraphicsDevice.Viewport.Height - pixelRect.Height;
+            }
             // TODO: Add your update logic here
-
+            oldKeyboardState = newKeyboardState;
             base.Update(gameTime);
         }
 
