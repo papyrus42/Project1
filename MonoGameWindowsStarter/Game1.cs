@@ -15,6 +15,8 @@ namespace MonoGameWindowsStarter
         Rectangle pixelRect;
         int jumpHeight;
         bool canJump;
+        Texture2D platform;
+        Rectangle platformRect;
         KeyboardState oldKeyboardState;
         KeyboardState newKeyboardState;
 
@@ -41,6 +43,11 @@ namespace MonoGameWindowsStarter
             pixelRect.Y = 700 - 35;
             pixelRect.Width = 30;
             pixelRect.Height = 35;
+            //first platform
+            platformRect.X = 500;
+            platformRect.Y = 700-60;
+            platformRect.Width = 150;
+            platformRect.Height = 20;
 
             base.Initialize();
         }
@@ -55,6 +62,7 @@ namespace MonoGameWindowsStarter
             spriteBatch = new SpriteBatch(GraphicsDevice);
             //change later, he is very ugly
             pixeldude = Content.Load<Texture2D>("pixeldude");
+            platform = Content.Load<Texture2D>("pixel");
 
             // TODO: use this.Content to load your game content here
         }
@@ -96,25 +104,25 @@ namespace MonoGameWindowsStarter
             
             if (newKeyboardState.IsKeyDown(Keys.Up) && jumpHeight < 70 && canJump)
             {
-                    pixelRect.Y -= 1;
-                    jumpHeight += 1;
+                    pixelRect.Y -= 2;
+                    jumpHeight += 2;
             }
             else if (jumpHeight > 0)
             {
-                pixelRect.Y += 1;
-                jumpHeight--;
+                pixelRect.Y += 3;
+                jumpHeight -= 3;
             }
             if (jumpHeight >= 70)
             {
                 canJump = false;
             }
                
-            if (newKeyboardState.IsKeyUp(Keys.Up) && jumpHeight > 0)
-            {
-                pixelRect.Y += 1;
-                jumpHeight--;
-            }
-            if(jumpHeight == 0)
+           // if (newKeyboardState.IsKeyUp(Keys.Up) && jumpHeight > 0)
+            //{
+              //  pixelRect.Y += 3;
+                //jumpHeight -= 3;
+            //}
+            if(jumpHeight <= 0)
             {
                 canJump = true;
             }
@@ -150,6 +158,7 @@ namespace MonoGameWindowsStarter
             spriteBatch.Begin();
 
             spriteBatch.Draw(pixeldude, pixelRect ,Color.White);
+            spriteBatch.Draw(platform, platformRect, Color.Green);
             spriteBatch.End();
 
             // TODO: Add your drawing code here
