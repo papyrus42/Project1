@@ -39,15 +39,16 @@ namespace MonoGameWindowsStarter
             graphics.PreferredBackBufferHeight = 700;
             graphics.ApplyChanges();
 
+            pixelRect.Width = 45;
+            pixelRect.Height = 55;
             pixelRect.X = 0;
-            pixelRect.Y = 700 - 35;
-            pixelRect.Width = 30;
-            pixelRect.Height = 35;
+            pixelRect.Y = 700 - pixelRect.Height;
+            
             //first platform
             platformRect.X = 500;
-            platformRect.Y = 700-60;
+            platformRect.Y = 700-110;
             platformRect.Width = 150;
-            platformRect.Height = 20;
+            platformRect.Height = 100;
 
             base.Initialize();
         }
@@ -61,8 +62,8 @@ namespace MonoGameWindowsStarter
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             //change later, he is very ugly
-            pixeldude = Content.Load<Texture2D>("pixeldude");
-            platform = Content.Load<Texture2D>("pixel");
+            pixeldude = Content.Load<Texture2D>("Steve");
+            platform = Content.Load<Texture2D>("Grass Platform");
 
             // TODO: use this.Content to load your game content here
         }
@@ -158,7 +159,7 @@ namespace MonoGameWindowsStarter
             spriteBatch.Begin();
 
             spriteBatch.Draw(pixeldude, pixelRect ,Color.White);
-            spriteBatch.Draw(platform, platformRect, Color.Green);
+            spriteBatch.Draw(platform, platformRect, Color.White);
             spriteBatch.End();
 
             // TODO: Add your drawing code here
