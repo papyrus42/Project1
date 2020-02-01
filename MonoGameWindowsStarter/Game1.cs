@@ -13,12 +13,18 @@ namespace MonoGameWindowsStarter
         SpriteBatch spriteBatch;
         Texture2D pixeldude;
         Rectangle pixelRect;
+        BoundaryRectangle boundDude;
         int jumpHeight;
         bool canJump;
         Texture2D platform;
         Rectangle platformRect;
+        BoundaryRectangle boundPlat;
         KeyboardState oldKeyboardState;
         KeyboardState newKeyboardState;
+        float runDirection;
+        float jumpDirection;
+        int groundLevel;
+        bool isOnPlatform;
 
         public Game1()
         {
@@ -39,16 +45,26 @@ namespace MonoGameWindowsStarter
             graphics.PreferredBackBufferHeight = 700;
             graphics.ApplyChanges();
 
+            //pixel dude
             pixelRect.Width = 45;
             pixelRect.Height = 55;
             pixelRect.X = 0;
             pixelRect.Y = 700 - pixelRect.Height;
-            
+            boundDude = new BoundaryRectangle(pixelRect.X, pixelRect.Y, pixelRect.Width, pixelRect.Height);
+            groundLevel = 700 - pixelRect.Height;
+
             //first platform
-            platformRect.X = 500;
-            platformRect.Y = 700-110;
             platformRect.Width = 150;
-            platformRect.Height = 100;
+            platformRect.Height = 110;
+            platformRect.X = 500;
+            platformRect.Y = 700-platformRect.Height;
+           
+            boundPlat = new BoundaryRectangle(platformRect.X+ 50, platformRect.Y+ (platformRect.Height/2), 60, platformRect.Height);
+
+            runDirection = 0;
+            jumpDirection = 0;
+            isOnPlatform = false;
+            canJump = true;
 
             base.Initialize();
         }
@@ -87,63 +103,157 @@ namespace MonoGameWindowsStarter
             newKeyboardState = Keyboard.GetState();
             //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             //  Exit();
-
+            jumpDirection = 0;
+            runDirection = 0;
+            
             if (newKeyboardState.IsKeyDown(Keys.Escape))
                 Exit();
 
             
-
+            //run left
             if (newKeyboardState.IsKeyDown(Keys.Left))
             {
-                pixelRect.X -= 2;
+                //pixelRect.X -= 2;
+                runDirection -= 2;
+                
             }
-
+            //run right
             if (newKeyboardState.IsKeyDown(Keys.Right))
             {
-                pixelRect.X += 2;
+                //pixelRect.X += 2;
+                runDirection += 2;
             }
-            
-            if (newKeyboardState.IsKeyDown(Keys.Up) && jumpHeight < 70 && canJump)
+            // jump >:(
+
+            //jumping -> Up key is down, height is not above 70, and can jump
+
+            //falling -> height was above 70 -> !canJump, start falling, check if on platformn(then stop falling),
+            //if not fall all the way. if !jumping and not on platform, he should fall back to origional Y
+
+            // check if on platform -> if yes, jumpheight = 0 and canJump = true
+
+
+            if(newKeyboardState.IsKeyDown(Keys.Up) && jumpHeight < 90 && canJump)
             {
-                    pixelRect.Y -= 2;
-                    jumpHeight += 2;
+                jumpDirection -= 3;
+                jumpHeight += 3;
             }
-            else if (jumpHeight > 0)
-            {
-                pixelRect.Y += 3;
-                jumpHeight -= 3;
-            }
-            if (jumpHeight >= 70)
+            if(jumpHeight >= 90)
             {
                 canJump = false;
             }
-               
-           // if (newKeyboardState.IsKeyUp(Keys.Up) && jumpHeight > 0)
-            //{
-              //  pixelRect.Y += 3;
-                //jumpHeight -= 3;
-            //}
-            if(jumpHeight <= 0)
+
+            pixelRect.Y += (int)jumpDirection;
+            pixelRect.X += (int)runDirection;
+            boundDude.X = pixelRect.X;
+            boundDude.Y = pixelRect.Y;
+
+            if (boundDude.CollidesWith(boundPlat))
+            {
+                isOnPlatform = true;
+            }
+            else
+            {
+                isOnPlatform = false;
+            }
+
+            if (isOnPlatform)
+            {
+                jumpHeight = 0;
+                canJump = true;
+            }
+            else if(pixelRect.Y < groundLevel)
+            {
+                jumpDirection += 3;
+            }
+            
+            
+
+            if (!canJump)
+            {
+                jumpHeight -= 3;
+                jumpDirection += 3;
+            }
+
+            if (pixelRect.Y >= groundLevel && jumpHeight <= 0)
             {
                 canJump = true;
             }
 
+            pixelRect.Y += (int)jumpDirection;
+            pixelRect.X += (int)runDirection;
+            boundDude.X = pixelRect.X;
+            boundDude.Y = pixelRect.Y;
+            if(pixelRect.Y > groundLevel)
+            {
+                pixelRect.Y = groundLevel;
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+            // if (newKeyboardState.IsKeyDown(Keys.Up) && jumpHeight < 70 && canJump)
+            // {
+            //     //pixelRect.Y -= 2;
+            //     jumpDirection -= 2;
+            //         jumpHeight += 2;
+            // }
+            // else if (jumpHeight > 0)
+            // {
+            //     //pixelRect.Y += 3;
+            //     jumpDirection += 3;
+            //     jumpHeight -= 3;
+            // }
+            // if (jumpHeight >= 70)
+            // {
+            //     canJump = false;
+            // }
+
+            //// if (newKeyboardState.IsKeyUp(Keys.Up) && jumpHeight > 0)
+            // //{
+            //   //  pixelRect.Y += 3;
+            //     //jumpHeight -= 3;
+            // //}
+            // if(jumpHeight <= 0)
+            // {
+            //     canJump = true;
+
+            // }
+            // pixelRect.X += (int)runDirection;
+            // pixelRect.Y += (int)jumpDirection;
+            // boundDude.X = pixelRect.X;
+            // boundDude.Y = pixelRect.Y;
+            // if (boundDude.IsOnTop(boundPlat))
+            // {
+            //     pixelRect.Y -= platformRect.Y;
+            // }
             if (pixelRect.X < 0)
             {
-                pixelRect.X = 0;
+                 pixelRect.X = 0;
             }
             if (pixelRect.X > GraphicsDevice.Viewport.Width - pixelRect.Width)
             {
-                pixelRect.X = GraphicsDevice.Viewport.Width - pixelRect.Width;
+                 pixelRect.X = GraphicsDevice.Viewport.Width - pixelRect.Width;
             }
             if(pixelRect.Y < 0)
             {
-                pixelRect.Y = 0;
+                 pixelRect.Y = 0;
             }
             if(pixelRect.Y > GraphicsDevice.Viewport.Height - pixelRect.Height)
             {
-                pixelRect.Y = GraphicsDevice.Viewport.Height - pixelRect.Height;
+                 pixelRect.Y = GraphicsDevice.Viewport.Height - pixelRect.Height;
             }
+
+
+
             // TODO: Add your update logic here
             oldKeyboardState = newKeyboardState;
             base.Update(gameTime);
