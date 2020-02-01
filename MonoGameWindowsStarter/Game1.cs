@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace MonoGameWindowsStarter
 {
@@ -20,14 +21,19 @@ namespace MonoGameWindowsStarter
         Rectangle platformRect;
         Texture2D platformTwo;
         Rectangle platTwoRect;
+        Texture2D movingPlatform;
+        Rectangle movinPlatRect;
+        BoundaryRectangle boundMovinPlat;
         BoundaryRectangle boundPlatTwo;
         BoundaryRectangle boundPlat;
+        int platformVelocity;
         KeyboardState oldKeyboardState;
         KeyboardState newKeyboardState;
-        float runDirection;
-        float jumpDirection;
+        int runDirection;
+        int jumpDirection;
         int groundLevel;
         bool isOnPlatform;
+        
 
         public Game1()
         {
@@ -73,7 +79,16 @@ namespace MonoGameWindowsStarter
 
             boundPlatTwo = new BoundaryRectangle(platTwoRect.X + 50, platTwoRect.Y + (platTwoRect.Height / 2), 60, 1);
 
+            //moving platform
+            movinPlatRect.Width = 150;
+            movinPlatRect.Height = 100;
+            movinPlatRect.X = 0 + movinPlatRect.Width;
+            movinPlatRect.Y = 530 - movinPlatRect.Height;
 
+            boundMovinPlat = new BoundaryRectangle(movinPlatRect.X + 50, movinPlatRect.Y + (movinPlatRect.Height/2), 60 , 1);
+
+
+            platformVelocity = 5;
             runDirection = 0;
             jumpDirection = 0;
             isOnPlatform = false;
@@ -94,6 +109,7 @@ namespace MonoGameWindowsStarter
             pixeldude = Content.Load<Texture2D>("Steve");
             platform = Content.Load<Texture2D>("Grass Platform");
             platformTwo = Content.Load<Texture2D>("Grass Platform");
+            movingPlatform = Content.Load<Texture2D>("Grass Platform");
 
             // TODO: use this.Content to load your game content here
         }
@@ -131,11 +147,27 @@ namespace MonoGameWindowsStarter
                 runDirection -= 2;
                 
             }
+            else if(newKeyboardState.IsKeyDown(Keys.Left) && boundDude.CollidesWith(boundMovinPlat))
+            {
+                runDirection -= (2 - platformVelocity);
+            }
+            else if (boundDude.CollidesWith(boundMovinPlat))
+            {
+                runDirection = platformVelocity;
+            }
             //run right
             if (newKeyboardState.IsKeyDown(Keys.Right))
             {
                 //pixelRect.X += 2;
                 runDirection += 2;
+            }
+            else if (newKeyboardState.IsKeyDown(Keys.Right) && boundDude.CollidesWith(boundMovinPlat))
+            {
+                runDirection += 2 + platformVelocity;
+            }
+            else if (boundDude.CollidesWith(boundMovinPlat))
+            {
+                runDirection = platformVelocity;
             }
             // jump >:(
 
@@ -147,7 +179,7 @@ namespace MonoGameWindowsStarter
             // check if on platform -> if yes, jumpheight = 0 and canJump = true
 
 
-            if(newKeyboardState.IsKeyDown(Keys.Up) && jumpHeight < 90 && canJump)
+            if (newKeyboardState.IsKeyDown(Keys.Up) && jumpHeight < 90 && canJump)
             {
                 jumpDirection -= 3;
                 jumpHeight += 3;
@@ -162,7 +194,7 @@ namespace MonoGameWindowsStarter
             boundDude.X = pixelRect.X;
             boundDude.Y = pixelRect.Y;
 
-            if (boundDude.CollidesWith(boundPlat) || boundDude.CollidesWith(boundPlatTwo))
+            if (boundDude.CollidesWith(boundPlat) || boundDude.CollidesWith(boundPlatTwo) || boundDude.CollidesWith(boundMovinPlat))
             {
                 isOnPlatform = true;
             }
@@ -170,6 +202,8 @@ namespace MonoGameWindowsStarter
             {
                 isOnPlatform = false;
             }
+           
+            
 
             if (isOnPlatform)
             {
@@ -203,52 +237,23 @@ namespace MonoGameWindowsStarter
                 pixelRect.Y = groundLevel;
             }
 
+            movinPlatRect.X += platformVelocity;
+            
 
+            if (movinPlatRect.X < 0)
+            {
+                movinPlatRect.X = 0;
+                
+                platformVelocity *= -1;
+            }
+            if (movinPlatRect.X > GraphicsDevice.Viewport.Width - movinPlatRect.Width)
+            {
+                movinPlatRect.X = GraphicsDevice.Viewport.Width - movinPlatRect.Width;
+                
+                platformVelocity *= -1;
+            }
+            boundMovinPlat.X = movinPlatRect.X;
 
-
-
-
-
-
-
-
-
-
-            // if (newKeyboardState.IsKeyDown(Keys.Up) && jumpHeight < 70 && canJump)
-            // {
-            //     //pixelRect.Y -= 2;
-            //     jumpDirection -= 2;
-            //         jumpHeight += 2;
-            // }
-            // else if (jumpHeight > 0)
-            // {
-            //     //pixelRect.Y += 3;
-            //     jumpDirection += 3;
-            //     jumpHeight -= 3;
-            // }
-            // if (jumpHeight >= 70)
-            // {
-            //     canJump = false;
-            // }
-
-            //// if (newKeyboardState.IsKeyUp(Keys.Up) && jumpHeight > 0)
-            // //{
-            //   //  pixelRect.Y += 3;
-            //     //jumpHeight -= 3;
-            // //}
-            // if(jumpHeight <= 0)
-            // {
-            //     canJump = true;
-
-            // }
-            // pixelRect.X += (int)runDirection;
-            // pixelRect.Y += (int)jumpDirection;
-            // boundDude.X = pixelRect.X;
-            // boundDude.Y = pixelRect.Y;
-            // if (boundDude.IsOnTop(boundPlat))
-            // {
-            //     pixelRect.Y -= platformRect.Y;
-            // }
             if (pixelRect.X < 0)
             {
                  pixelRect.X = 0;
@@ -285,6 +290,7 @@ namespace MonoGameWindowsStarter
             spriteBatch.Draw(pixeldude, pixelRect ,Color.White);
             spriteBatch.Draw(platform, platformRect, Color.White);
             spriteBatch.Draw(platformTwo, platTwoRect, Color.White);
+            spriteBatch.Draw(movingPlatform, movinPlatRect, Color.White);
             spriteBatch.End();
 
             // TODO: Add your drawing code here
