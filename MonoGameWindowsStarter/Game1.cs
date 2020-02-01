@@ -18,6 +18,9 @@ namespace MonoGameWindowsStarter
         bool canJump;
         Texture2D platform;
         Rectangle platformRect;
+        Texture2D platformTwo;
+        Rectangle platTwoRect;
+        BoundaryRectangle boundPlatTwo;
         BoundaryRectangle boundPlat;
         KeyboardState oldKeyboardState;
         KeyboardState newKeyboardState;
@@ -59,7 +62,17 @@ namespace MonoGameWindowsStarter
             platformRect.X = 500;
             platformRect.Y = 700-platformRect.Height;
            
-            boundPlat = new BoundaryRectangle(platformRect.X+ 50, platformRect.Y+ (platformRect.Height/2), 60, platformRect.Height);
+            boundPlat = new BoundaryRectangle(platformRect.X+ 50, platformRect.Y+ (platformRect.Height/2), 60, 1);
+
+
+            //second platform
+            platTwoRect.Width = 150;
+            platTwoRect.Height = 110;
+            platTwoRect.X = 280;
+            platTwoRect.Y = 600 - platTwoRect.Height;
+
+            boundPlatTwo = new BoundaryRectangle(platTwoRect.X + 50, platTwoRect.Y + (platTwoRect.Height / 2), 60, 1);
+
 
             runDirection = 0;
             jumpDirection = 0;
@@ -80,6 +93,7 @@ namespace MonoGameWindowsStarter
             //change later, he is very ugly
             pixeldude = Content.Load<Texture2D>("Steve");
             platform = Content.Load<Texture2D>("Grass Platform");
+            platformTwo = Content.Load<Texture2D>("Grass Platform");
 
             // TODO: use this.Content to load your game content here
         }
@@ -148,7 +162,7 @@ namespace MonoGameWindowsStarter
             boundDude.X = pixelRect.X;
             boundDude.Y = pixelRect.Y;
 
-            if (boundDude.CollidesWith(boundPlat))
+            if (boundDude.CollidesWith(boundPlat) || boundDude.CollidesWith(boundPlatTwo))
             {
                 isOnPlatform = true;
             }
@@ -270,6 +284,7 @@ namespace MonoGameWindowsStarter
 
             spriteBatch.Draw(pixeldude, pixelRect ,Color.White);
             spriteBatch.Draw(platform, platformRect, Color.White);
+            spriteBatch.Draw(platformTwo, platTwoRect, Color.White);
             spriteBatch.End();
 
             // TODO: Add your drawing code here
