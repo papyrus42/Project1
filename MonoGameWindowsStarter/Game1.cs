@@ -33,6 +33,10 @@ namespace MonoGameWindowsStarter
         int jumpDirection;
         int groundLevel;
         bool isOnPlatform;
+        bool blackHole;
+        Texture2D platformThree;
+        Rectangle platThreeRect;
+        BoundaryRectangle boundPlatThree;
         
 
         public Game1()
@@ -55,27 +59,27 @@ namespace MonoGameWindowsStarter
             graphics.ApplyChanges();
 
             //pixel dude
-            pixelRect.Width = 45;
-            pixelRect.Height = 55;
+            pixelRect.Width = 65;
+            pixelRect.Height = 75;
             pixelRect.X = 0;
             pixelRect.Y = 700 - pixelRect.Height;
             boundDude = new BoundaryRectangle(pixelRect.X, pixelRect.Y, pixelRect.Width, pixelRect.Height);
             groundLevel = 700 - pixelRect.Height;
 
             //first platform
-            platformRect.Width = 150;
-            platformRect.Height = 110;
+            platformRect.Width = 190;
+            platformRect.Height = 150;
             platformRect.X = 500;
-            platformRect.Y = 700-platformRect.Height;
+            platformRect.Y = 660-platformRect.Height;
            
             boundPlat = new BoundaryRectangle(platformRect.X+ 50, platformRect.Y+ (platformRect.Height/2), 60, 1);
 
 
             //second platform
-            platTwoRect.Width = 150;
-            platTwoRect.Height = 110;
+            platTwoRect.Width = 190;
+            platTwoRect.Height = 150;
             platTwoRect.X = 280;
-            platTwoRect.Y = 600 - platTwoRect.Height;
+            platTwoRect.Y = 530 - platTwoRect.Height;
 
             boundPlatTwo = new BoundaryRectangle(platTwoRect.X + 50, platTwoRect.Y + (platTwoRect.Height / 2), 60, 1);
 
@@ -87,12 +91,20 @@ namespace MonoGameWindowsStarter
 
             boundMovinPlat = new BoundaryRectangle(movinPlatRect.X + 50, movinPlatRect.Y + (movinPlatRect.Height/2), 60 , 1);
 
+            //Third Platform
+            platThreeRect.Width = 150;
+            platThreeRect.Height = 110;
+            platThreeRect.X = 230;
+            platThreeRect.Y = 500 - platThreeRect.Height;
+
+            boundPlatThree = new BoundaryRectangle(platThreeRect.X + 50, platThreeRect.Y + (platThreeRect.Height / 2), 60, 1);
 
             platformVelocity = 5;
             runDirection = 0;
             jumpDirection = 0;
             isOnPlatform = false;
             canJump = true;
+            blackHole = false;
 
             base.Initialize();
         }
@@ -109,6 +121,7 @@ namespace MonoGameWindowsStarter
             platform = Content.Load<Texture2D>("Grass Platform");
             platformTwo = Content.Load<Texture2D>("Grass Platform");
             movingPlatform = Content.Load<Texture2D>("Black Hole");
+            platformThree = Content.Load<Texture2D>("Grass Platform");
 
             // TODO: use this.Content to load your game content here
         }
@@ -135,6 +148,7 @@ namespace MonoGameWindowsStarter
             jumpDirection = 0;
             runDirection = 0;
             
+
             if (newKeyboardState.IsKeyDown(Keys.Escape))
                 Exit();
 
@@ -143,31 +157,31 @@ namespace MonoGameWindowsStarter
             if (newKeyboardState.IsKeyDown(Keys.Left))
             {
                 //pixelRect.X -= 2;
-                runDirection -= 2;
+                runDirection -= (int)(gameTime.ElapsedGameTime.TotalMilliseconds * 0.2);
                 
             }
-            else if(newKeyboardState.IsKeyDown(Keys.Left) && boundDude.CollidesWith(boundMovinPlat))
-            {
-                runDirection -= (2 - platformVelocity);
-            }
-            else if (boundDude.CollidesWith(boundMovinPlat))
-            {
-                runDirection = platformVelocity;
-            }
+            //else if(newKeyboardState.IsKeyDown(Keys.Left) && boundDude.CollidesWith(boundMovinPlat))
+            //{
+            //    runDirection -= (2 - platformVelocity);
+            //}
+            //else if (boundDude.CollidesWith(boundMovinPlat))
+            //{
+            //    runDirection = platformVelocity;
+            //}
             //run right
             if (newKeyboardState.IsKeyDown(Keys.Right))
             {
                 //pixelRect.X += 2;
-                runDirection += 2;
+                runDirection += (int)(gameTime.ElapsedGameTime.TotalMilliseconds * 0.2);
             }
-            else if (newKeyboardState.IsKeyDown(Keys.Right) && boundDude.CollidesWith(boundMovinPlat))
-            {
-                runDirection += 2 + platformVelocity;
-            }
-            else if (boundDude.CollidesWith(boundMovinPlat))
-            {
-                runDirection = platformVelocity;
-            }
+            //else if (newKeyboardState.IsKeyDown(Keys.Right) && boundDude.CollidesWith(boundMovinPlat))
+            //{
+            //    runDirection += 2 + platformVelocity;
+            //}
+            //else if (boundDude.CollidesWith(boundMovinPlat))
+            //{
+            //    runDirection = platformVelocity;
+            //}
             // jump >:(
 
             //jumping -> Up key is down, height is not above 70, and can jump
@@ -180,7 +194,7 @@ namespace MonoGameWindowsStarter
 
             if (newKeyboardState.IsKeyDown(Keys.Up) && jumpHeight < 90 && canJump)
             {
-                jumpDirection -= 3;
+                jumpDirection -= (int)(gameTime.ElapsedGameTime.TotalMilliseconds * 0.3);
                 jumpHeight += 3;
             }
             if(jumpHeight >= 90)
@@ -193,9 +207,13 @@ namespace MonoGameWindowsStarter
             boundDude.X = pixelRect.X;
             boundDude.Y = pixelRect.Y;
 
-            if (boundDude.CollidesWith(boundPlat) || boundDude.CollidesWith(boundPlatTwo) || boundDude.CollidesWith(boundMovinPlat))
+            if (boundDude.CollidesWith(boundPlat) || boundDude.CollidesWith(boundPlatTwo) || boundDude.CollidesWith(boundPlatThree))
             {
                 isOnPlatform = true;
+            }
+            else if (boundDude.CollidesWith(boundMovinPlat))
+            {
+                blackHole = true;
             }
             else
             {
@@ -211,7 +229,7 @@ namespace MonoGameWindowsStarter
             }
             else if(pixelRect.Y < groundLevel)
             {
-                jumpDirection += 3;
+                jumpDirection += (int)(gameTime.ElapsedGameTime.TotalMilliseconds * 0.3);
             }
             
             
@@ -219,7 +237,7 @@ namespace MonoGameWindowsStarter
             if (!canJump)
             {
                 jumpHeight -= 3;
-                jumpDirection += 3;
+                jumpDirection += (int)(gameTime.ElapsedGameTime.TotalMilliseconds * 0.3);
             }
 
             if (pixelRect.Y >= groundLevel && jumpHeight <= 0)
@@ -269,7 +287,14 @@ namespace MonoGameWindowsStarter
             {
                  pixelRect.Y = GraphicsDevice.Viewport.Height - pixelRect.Height;
             }
-
+            if (blackHole)
+            {
+                pixelRect.X = 0;
+                pixelRect.Y = 700 - pixelRect.Height;
+                boundDude.X = pixelRect.X;
+                boundDude.Y = pixelRect.Y;
+                blackHole = false;
+            }
 
 
             // TODO: Add your update logic here
@@ -290,6 +315,7 @@ namespace MonoGameWindowsStarter
             spriteBatch.Draw(platform, platformRect, Color.White);
             spriteBatch.Draw(platformTwo, platTwoRect, Color.White);
             spriteBatch.Draw(movingPlatform, movinPlatRect, Color.White);
+            spriteBatch.Draw(platformThree, platThreeRect, Color.White);
             spriteBatch.End();
 
             // TODO: Add your drawing code here
