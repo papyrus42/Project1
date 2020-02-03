@@ -37,6 +37,9 @@ namespace MonoGameWindowsStarter
         Texture2D platformThree;
         Rectangle platThreeRect;
         BoundaryRectangle boundPlatThree;
+        Texture2D platformFour;
+        Rectangle platFourRect;
+        BoundaryRectangle boundPlatFour;
         
 
         public Game1()
@@ -87,17 +90,25 @@ namespace MonoGameWindowsStarter
             movinPlatRect.Width = 150;
             movinPlatRect.Height = 100;
             movinPlatRect.X = 0 + movinPlatRect.Width;
-            movinPlatRect.Y = 530 - movinPlatRect.Height;
+            movinPlatRect.Y = 540 - movinPlatRect.Height;
 
             boundMovinPlat = new BoundaryRectangle(movinPlatRect.X + 50, movinPlatRect.Y + (movinPlatRect.Height/2), 60 , 1);
 
             //Third Platform
-            platThreeRect.Width = 150;
-            platThreeRect.Height = 110;
+            platThreeRect.Width = 190;
+            platThreeRect.Height = 150;
             platThreeRect.X = 230;
-            platThreeRect.Y = 500 - platThreeRect.Height;
+            platThreeRect.Y = 400 - platThreeRect.Height;
 
             boundPlatThree = new BoundaryRectangle(platThreeRect.X + 50, platThreeRect.Y + (platThreeRect.Height / 2), 60, 1);
+
+            //Fourth Platform
+            platFourRect.Width = 190;
+            platFourRect.Height = 150;
+            platFourRect.X = 570;
+            platFourRect.Y = 300 - platFourRect.Height;
+
+            boundPlatFour = new BoundaryRectangle(platFourRect.X + 50, platFourRect.Y + (platFourRect.Height/2),60,1);
 
             platformVelocity = 5;
             runDirection = 0;
@@ -122,6 +133,7 @@ namespace MonoGameWindowsStarter
             platformTwo = Content.Load<Texture2D>("Grass Platform");
             movingPlatform = Content.Load<Texture2D>("Black Hole");
             platformThree = Content.Load<Texture2D>("Grass Platform");
+            platformFour = Content.Load<Texture2D>("Grass Platform");
 
             // TODO: use this.Content to load your game content here
         }
@@ -207,7 +219,7 @@ namespace MonoGameWindowsStarter
             boundDude.X = pixelRect.X;
             boundDude.Y = pixelRect.Y;
 
-            if (boundDude.CollidesWith(boundPlat) || boundDude.CollidesWith(boundPlatTwo) || boundDude.CollidesWith(boundPlatThree))
+            if (boundDude.CollidesWith(boundPlat) || boundDude.CollidesWith(boundPlatTwo) || boundDude.CollidesWith(boundPlatThree) || boundDude.CollidesWith(boundPlatFour))
             {
                 isOnPlatform = true;
             }
@@ -316,6 +328,7 @@ namespace MonoGameWindowsStarter
             spriteBatch.Draw(platformTwo, platTwoRect, Color.White);
             spriteBatch.Draw(movingPlatform, movinPlatRect, Color.White);
             spriteBatch.Draw(platformThree, platThreeRect, Color.White);
+            spriteBatch.Draw(platformFour, platFourRect, Color.White);
             spriteBatch.End();
 
             // TODO: Add your drawing code here
