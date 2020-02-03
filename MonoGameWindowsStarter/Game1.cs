@@ -105,11 +105,10 @@ namespace MonoGameWindowsStarter
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            //change later, he is very ugly
             pixeldude = Content.Load<Texture2D>("Steve");
             platform = Content.Load<Texture2D>("Grass Platform");
             platformTwo = Content.Load<Texture2D>("Grass Platform");
-            movingPlatform = Content.Load<Texture2D>("Grass Platform");
+            movingPlatform = Content.Load<Texture2D>("Black Hole");
 
             // TODO: use this.Content to load your game content here
         }
